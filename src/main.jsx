@@ -31,11 +31,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/tickets',
-        element: (
-            <ProtectedRoute>
-                <Tickets />
-            </ProtectedRoute>
-        ),
+        element: <Tickets />,
         errorElement: <ErrorPage />
     },
     {
@@ -52,7 +48,8 @@ const router = createBrowserRouter([
         path: '/error403',
         element: <Err403Page />,
         errorElement: <ErrorPage />
-    }
+    },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
