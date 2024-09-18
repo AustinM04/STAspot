@@ -148,7 +148,7 @@ const Register = () => {
 
                         <button onClick={handleGoogleSignUp} className="btn btn-danger w-100 mb-2">
                             <i className="bi bi-google mx-2"></i>
-                            Sign in with Google
+                            Register with Google
                         </button>
                     </div>
                 </div>
