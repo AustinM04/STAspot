@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
-import { auth, googleProvider } from '../../config/firebase';
-import { signInWithEmailAndPassword, signInWithPopup, setPersistence, browserSessionPersistence } from 'firebase/auth';
-import { useNavigate, useLocation } from 'react-router-dom'; // For navigation
+import { auth, db, googleProvider } from '../../config/firebase';
+import {
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    setPersistence,
+    browserSessionPersistence
+} from 'firebase/auth';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from "../header/Header.jsx";
 import About from "../about/About.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { doc, setDoc, getDoc } from 'firebase/firestore';  // Import getDoc for checking Firestore
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const location = useLocation(); // For getting the protected route they wanted to access
+    const location = useLocation();
 
-    // Get the "from" route the user wanted to access before being redirected to log in
-    const from = location.state?.from?.pathname || "/"; // Defaults to "/" if no specific route
+    const from = location.state?.from?.pathname || "/";
 
-    // Handle user login with email and password
+    // Handle email/password login
     const handleLogin = async () => {
         try {
             await setPersistence(auth, browserSessionPersistence);
             await signInWithEmailAndPassword(auth, email, password);
             alert('Logged in successfully!');
-            navigate(from, { replace: true }); // Redirect to the protected route or "/"
+            navigate(from, { replace: true });
         } catch (err) {
             console.error(err);
             setError('Login failed. Please check your email or password.');
@@ -32,9 +37,35 @@ const SignIn = () => {
     // Handle Google login
     const handleGoogleLogin = async () => {
         try {
-            await signInWithPopup(auth, googleProvider);
-            alert('Logged in with Google!');
-            navigate(from, { replace: true }); // Redirect to the protected route or "/"
+            // Sign in with Google popup
+            const userCredential = await signInWithPopup(auth, googleProvider);
+            const currentUser = userCredential.user;
+
+            const usersDocRef = doc(db, "users", currentUser.uid); // Reference to Firestore document
+            const userDoc = await getDoc(usersDocRef); // Check if the user document exists
+
+            if (!userDoc.exists()) {
+                // If user doesn't exist, add them to Firestore
+                const gName = currentUser.displayName;
+                const dbEmail = currentUser.email;
+
+                await setDoc(doc(db, "users", currentUser.uid), {
+                    first: gName.split(" ")[0],
+                    last: gName.split(" ")[1] || gName,  // If last name is missing
+                    email: dbEmail,
+                    isAdmin: false, // Default isAdmin to false
+                    activeTickets: 0,
+                    closedTickets: 0,
+                    pendingTickets: 0,
+                });
+
+                alert('Registered with Google!');
+            } else {
+                alert('Logged in with Google!');
+            }
+
+            navigate(from, { replace: true });  // Redirect to the original route or home page
+
         } catch (err) {
             console.error(err);
             setError('Google login failed.');
@@ -84,7 +115,6 @@ const SignIn = () => {
 
                                 <hr className="my-4" />
 
-                                {/* Social login buttons */}
                                 <button onClick={handleGoogleLogin} className="btn btn-danger w-100 mb-2">
                                     <i className="bi bi-google mx-2"></i>
                                     Sign in with Google
