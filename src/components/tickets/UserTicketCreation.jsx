@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { db, auth } from '../../config/firebase';
-import { Timestamp, setDoc, doc } from 'firebase/firestore';
+import { Timestamp, setDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Alert, ButtonToolbar } from 'react-bootstrap';
+import { Alert, ButtonToolbar, Card, Nav } from 'react-bootstrap';
 
 const UserTicketCreation = () => {
     const [department, setDepartment] = useState('');
@@ -12,14 +12,50 @@ const UserTicketCreation = () => {
     const [description, setDescription] = useState('');
     const [error, setError] = useState(null);
     const [show, setShow] = useState(false);
-    const [success, setSuccess] = useState(false); // New state for success message
+    const [success, setSuccess] = useState(false);
+    const [tickets, setTickets] = useState({ pending: [], active: [], closed: [] }); // Store tickets
+    const [activeTab, setActiveTab] = useState('pending'); // Manage active ticket view
 
-    const handleClose = () => {
-        setShow(false);
-        // Do not reset the success state here, so the success alert stays visible after the modal is closed
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    // Fetch tickets from Firestore based on the user's ID
+    const fetchTickets = async () => {
+        const user = auth.currentUser;
+
+        if (!user) {
+            setError('User not authenticated.');
+            return;
+        }
+
+        try {
+            const q = query(collection(db, 'tickets'), where('owner', '==', user.uid));
+            const querySnapshot = await getDocs(q);
+
+            const pendingTickets = [];
+            const activeTickets = [];
+            const closedTickets = [];
+
+            querySnapshot.forEach((doc) => {
+                const ticket = doc.data();
+                if (ticket.isPending) {
+                    pendingTickets.push(ticket);
+                } else if (ticket.isActive) {
+                    activeTickets.push(ticket);
+                } else if (ticket.isClosed) {
+                    closedTickets.push(ticket);
+                }
+            });
+
+            setTickets({ pending: pendingTickets, active: activeTickets, closed: closedTickets });
+        } catch (err) {
+            console.error('Error fetching tickets:', err);
+        }
     };
 
-    const handleShow = () => setShow(true);
+    useEffect(() => {
+        fetchTickets(); // Fetch tickets on component mount
+    }, [success]); // Refetch tickets when a new one is created
 
     const handleSubmit = async () => {
         const user = auth.currentUser;
@@ -35,7 +71,7 @@ const UserTicketCreation = () => {
         }
 
         try {
-            const ticketName = `${user.displayName}_${Timestamp.now().toMillis()}`; // Create a unique ticket name using displayName and timestamp
+            const ticketName = `${user.displayName}_${Timestamp.now().toMillis()}`;
 
             await setDoc(doc(db, 'tickets', ticketName), {
                 department,
@@ -52,37 +88,50 @@ const UserTicketCreation = () => {
                 owner: user.uid
             });
 
-            setError(null); // Clear any previous error
-            setSuccess(true); // Show success alert
-            setTimeout(() => setSuccess(false), 3000); // Hide success after 3 seconds
+            setError(null);
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
 
-            // Clear the input fields after successful submission
             setDepartment('');
             setLocation('');
             setDescription('');
-
-            handleClose();  // Close the modal after successful submission
-
+            handleClose();
+            fetchTickets(); // Refresh tickets after successful submission
         } catch (err) {
             console.error(err);
             setError('Error creating ticket. Please try again.');
         }
     };
 
+    // Helper function to render tickets in card format
+    const renderTickets = (ticketList) => {
+        return ticketList.map((ticket, index) => (
+            <div key={index} className="col">
+                <Card className="h-100 border-0">
+                    <Card.Header className="webercolor text-white">
+                        {ticket.department}
+                    </Card.Header>
+                    <ul className="list-group list-group-flush">
+                        <li className="list-group-item">Location: {ticket.location}</li>
+                        <li className="list-group-item">Description: {ticket.description}</li>
+                    </ul>
+                </Card>
+            </div>
+        ));
+    };
+
     return (
         <div className="vh-100">
             {success && (
-            <Alert variant="success" className="text-center">
-                Ticket created successfully!
-            </Alert>
+                <Alert variant="success" className="text-center">
+                    Ticket created successfully!
+                </Alert>
             )}
+
             <Button className="p-2 m-5 btn btn-primary" onClick={handleShow}>
                 <i className="bi bi-plus"></i> Create a ticket
             </Button>
             <ButtonToolbar></ButtonToolbar>
-
-            {/* Show success alert outside the modal */}
-
 
             <Modal
                 show={show}
@@ -148,6 +197,53 @@ const UserTicketCreation = () => {
                     </button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Nav bar for selecting ticket type */}
+            <Nav fill variant="tabs" className="justify-content-center mt-3" defaultActiveKey="pending">
+                <Nav.Item>
+                    <Nav.Link eventKey="pending" onClick={() => setActiveTab('pending')}>
+                        Pending Tickets
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="active" onClick={() => setActiveTab('active')}>
+                        Active Tickets
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="closed" onClick={() => setActiveTab('closed')}>
+                        Closed Tickets
+                    </Nav.Link>
+                </Nav.Item>
+            </Nav>
+
+            <div className="container-fluid col-12 col-md-10 offset-md-1 mt-5">
+                {/* Render tickets based on the selected tab */}
+                {activeTab === 'pending' && (
+                    <>
+                        <h2 className="text-light">Pending Tickets</h2>
+                        <div className="row row-cols-1 row-cols-md-3 g-3">
+                            {renderTickets(tickets.pending)}
+                        </div>
+                    </>
+                )}
+                {activeTab === 'active' && (
+                    <>
+                        <h2 className="text-light">Active Tickets</h2>
+                        <div className="row row-cols-1 row-cols-md-3 g-3">
+                            {renderTickets(tickets.active)}
+                        </div>
+                    </>
+                )}
+                {activeTab === 'closed' && (
+                    <>
+                        <h2 className="text-light">Closed Tickets</h2>
+                        <div className="row row-cols-1 row-cols-md-3 g-3">
+                            {renderTickets(tickets.closed)}
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
 };
