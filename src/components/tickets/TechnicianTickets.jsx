@@ -3,6 +3,8 @@ import { db } from '../../config/firebase'; // Firebase config file
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { Button, Card, Nav, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import reactRefresh from "eslint-plugin-react-refresh";
+
 
 const TechnicianTickets = () => {
     const [tickets, setTickets] = useState({ pending: [], active: [], closed: [] }); // Separate tickets by type
@@ -48,6 +50,8 @@ const TechnicianTickets = () => {
             }));
             setSuccessMessage('Ticket accepted successfully!');
             setTimeout(() => setSuccessMessage(null), 3000);
+            await(3000)
+
         } catch (err) {
             console.error('Error accepting ticket: ', err);
         }
@@ -73,12 +77,14 @@ const TechnicianTickets = () => {
         }
     };
 
+    var RefreshRuntime = require('react-refresh/runtime');
+
     // Helper function to render tickets in card format
     const renderTickets = (ticketList) => {
         return ticketList.map((ticket) => (
             <div key={ticket.id} className="col">
                 <Card className="h-100 border-0">
-                    <Card.Header className="bg-dark text-white">
+                    <Card.Header className="webercolor text-white">
                         {ticket.department}
                     </Card.Header>
                     <ul className="list-group list-group-flush">
@@ -119,22 +125,22 @@ const TechnicianTickets = () => {
                 </Alert>
             )}
 
-            <h2 className="text-center mb-4">Technician Ticket View</h2>
+            <h2 className="text-center m-4 webercolor flex-column col-3 p-3 rounded-4">Technician Ticket View</h2>
 
             {/* Nav bar for selecting ticket type */}
-            <Nav fill variant="tabs" className="justify-content-center mt-3" defaultActiveKey="pending">
+            <Nav fill variant="tabs" className="justify-content-center mt-3 webercolor " defaultActiveKey="pending">
                 <Nav.Item>
-                    <Nav.Link eventKey="pending" onClick={() => setActiveTab('pending')}>
+                    <Nav.Link className="text-info" eventKey="pending" onClick={() => setActiveTab('pending')}>
                         Pending Tickets
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="active" onClick={() => setActiveTab('active')}>
+                    <Nav.Link className="text-info" eventKey="active" onClick={() => setActiveTab('active')}>
                         Active Tickets
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="closed" onClick={() => setActiveTab('closed')}>
+                    <Nav.Link className="text-info" eventKey="closed" onClick={() => setActiveTab('closed')}>
                         Closed Tickets
                     </Nav.Link>
                 </Nav.Item>
