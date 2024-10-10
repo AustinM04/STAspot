@@ -1,18 +1,18 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './App.css';
+import './src/App.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Root from './root.jsx';
-import ErrorPage from './error_page.jsx';
-import Ous from './components/ous/Ous.jsx';
-import Tickets from './components/tickets/Tickets.jsx';
+import ErrorPage from './src/error_page.jsx';
+import Ous from './src/components/ous/Ous.jsx';
+import Tickets from './src/components/tickets/Tickets.jsx';
 
-import Register from "./components/authentication/Register.jsx"; // Registration page
-import SignIn from "./components/authentication/Login.jsx";// Login page
-import ProtectedRoute from "./components/protected route/ProtectedRoute.jsx";
-import Err403Page from "./components/error/err403Page.jsx"; // The ProtectedRoute component
+import Register from "./src/components/authentication/Register.jsx"; // Registration page
+import SignIn from "./src/components/authentication/Login.jsx";// Login page
+import ProtectedRoute from "./src/components/protected route/ProtectedRoute.jsx";
+import Err403Page from "./src/components/error/err403Page.jsx"; // The ProtectedRoute component
 
 const router = createBrowserRouter([
     {
