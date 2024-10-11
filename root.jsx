@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../src/App.css'
-import Header from "../src/components/header/Header.jsx";
-import Home from "../src/components/home/Home.jsx";
-import About from "../src/components/about/About.jsx";
-import Lcards from "../src/components/individual components/landing cards/lcards.jsx";
+import './src/App.css'
+import Header from "./src/components/header/Header.jsx";
+import Home from "./src/components/home/Home.jsx";
+import About from "./src/components/about/About.jsx";
+import Lcards from "./src/components/individual components/landing cards/lcards.jsx";
 /*
 import Auth from "./components/authentication/auth.jsx";
 import { BrowserRouter, Route } from 'react-router-dom';
