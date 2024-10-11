@@ -52,6 +52,7 @@ const TechnicianTickets = () => {
             setTimeout(() => setSuccessMessage(null), 3000);
             await(3000)
 
+
         } catch (err) {
             console.error('Error accepting ticket: ', err);
         }
@@ -77,7 +78,7 @@ const TechnicianTickets = () => {
         }
     };
 
-    var RefreshRuntime = require('react-refresh/runtime');
+
 
     // Helper function to render tickets in card format
     const renderTickets = (ticketList) => {

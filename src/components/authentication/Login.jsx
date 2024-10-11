@@ -26,7 +26,6 @@ const SignIn = () => {
         try {
             await setPersistence(auth, browserSessionPersistence);
             await signInWithEmailAndPassword(auth, email, password);
-            alert('Logged in successfully!');
             navigate(from, { replace: true });
         } catch (err) {
             console.error(err);
