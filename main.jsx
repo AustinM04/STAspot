@@ -4,7 +4,7 @@ import './src/App.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Root from './root.jsx';
+import Root from './public/root.jsx';
 import ErrorPage from './src/error_page.jsx';
 import Ous from './src/components/ous/Ous.jsx';
 import Tickets from './src/components/tickets/Tickets.jsx';
