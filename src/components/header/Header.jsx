@@ -1,17 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { auth } from '../../config/firebase'; // Ensure your Firebase setup is configured
+import {auth, db} from '../../config/firebase'; // Ensure your Firebase setup is configured
 import { signOut } from 'firebase/auth';
-import './header.css'; // Ensure this file exists and has the appropriate styles
+import './header.css';
+import {doc, getDoc} from "firebase/firestore"; // Ensure this file exists and has the appropriate styles
 
 const Header = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const [isAdmin, setAdmin] = useState(false);
+
 
     // Monitor the current user's authentication status
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
             setUser(user);
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        if (userData.isAdmin) {
+                            setAdmin(true); // Set if user is admin
+                        }
+                    }
+
+                }catch (error){
+                    console.log(error);
+                }
+            }
+
         });
         return () => unsubscribe(); // Cleanup the listener on component unmount
     }, []);
@@ -45,13 +64,22 @@ const Header = () => {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    {user ? (
+                        isAdmin ? (
                     <div className="navbar-nav" id="topNavBar">
                         <NavLink className="nav-link" to="/" id="home">
                             Home
                         </NavLink>
+
+                        <NavLink className="nav-link" to="/tickets">
+                            Tickets
+                        </NavLink>
+
+
                         <NavLink className="nav-link" to="/ous">
                             Maps & OUs
                         </NavLink>
+
 
                         {/* Dropdown for Imaging and Post-Image */}
                         <div className="nav-item dropdown">
@@ -85,37 +113,55 @@ const Header = () => {
                         <NavLink className="nav-link" to="/readiness">
                             Readiness
                         </NavLink>
-                        <NavLink className="nav-link" to="/tickets">
-                            Tickets
-                        </NavLink>
-                    </div>
 
-                    {/* Auth Buttons */}
-                    <div className="ms-auto">
-                        {user ? (
-                            <div className="d-flex align-items-center">
+                    </div>
+                        ):(
+                            <div className="navbar-nav" id="topNavBar">
+                            <NavLink className="nav-link" to="/" id="home">
+                            Home
+                            </NavLink>
+
+                            <NavLink className="nav-link" to="/tickets">
+                            Tickets
+                            </NavLink>
+
+
+                            </div>
+                        )
+                        ):(
+                        <div className="navbar-nav" id="topNavBar">
+                            <NavLink className="nav-link" to="/" id="home">
+                                Home
+                            </NavLink>
+                        </div>
+                        )}
+
+                            {/* Auth Buttons */}
+                            <div className="ms-auto">
+                                {user ? (
+                                    <div className="d-flex align-items-center">
                                 <span className="navbar-text me-3">
                                     Welcome, {auth.currentUser?.displayName}
                                 </span>
-                                <button className="btn btn-outline-light" onClick={handleLogout}>
-                                    Logout
-                                </button>
+                                        <button className="btn btn-outline-light" onClick={handleLogout}>
+                                            Logout
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <NavLink className="btn btn-outline-light me-2" to="/login">
+                                            Login
+                                        </NavLink>
+                                        <NavLink className="btn btn-light" to="/register">
+                                            Register
+                                        </NavLink>
+                                    </div>
+                                )}
                             </div>
-                        ) : (
-                            <div>
-                                <NavLink className="btn btn-outline-light me-2" to="/login">
-                                    Login
-                                </NavLink>
-                                <NavLink className="btn btn-light" to="/register">
-                                    Register
-                                </NavLink>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </nav>
-    );
-};
+                        </div>
+                        </div>
+                        </nav>
+                        );
+                    };
 
-export default Header;
+                    export default Header;
