@@ -82,7 +82,7 @@ const Register = () => {
         <>
             <Header />
             <div className="container d-flex justify-content-center align-items-center vh-100">
-                <div className="card bg-white mt-5 mx-auto" style={{ borderRadius: '1rem', maxWidth: '500px' }}>
+                <div className="card bg-white mt-5 mx-auto rounded-4">
                     <div className="card-body p-5">
                         <h2 className="fw-bold mb-2 text-center">Register</h2>
                         <p className="text-black-50 mb-3 text-center">Please create an account!</p>

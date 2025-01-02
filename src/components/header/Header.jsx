@@ -56,7 +56,7 @@ const Header = () => {
                         {/* Dropdown for Imaging and Post-Image */}
                         <div className="nav-item dropdown">
                             <a
-                                className="nav-link dropdown-toggle"
+                                className="nav-link dropdown-menu"
                                 href="#"
                                 id="imagingDropdown"
                                 role="button"
