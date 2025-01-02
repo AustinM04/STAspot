@@ -56,14 +56,14 @@ const Header = () => {
                         {/* Dropdown for Imaging and Post-Image */}
                         <div className="nav-item dropdown">
                             <a
-                                className="nav-link dropdown-menu"
+                                className="nav-link"
                                 href="#"
                                 id="imagingDropdown"
                                 role="button"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
                             >
-                                Imaging
+                                Imaging<span className="caret"></span>
                             </a>
                             <ul className="dropdown-menu" aria-labelledby="imagingDropdown">
                                 <li>
