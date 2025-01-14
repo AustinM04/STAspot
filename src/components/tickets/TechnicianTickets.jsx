@@ -126,10 +126,15 @@ const TechnicianTickets = () => {
                 </Alert>
             )}
 
-            <h2 className="text-center m-4 webercolor flex-column col-3 p-3 rounded-4">Technician Ticket View</h2>
+            <div className="d-flex justify-content-center mt-5">
+                <h1 className="display-5 fw-bold text-light bg-dark d-inline-flex p-2 rounded-start bg-opacity-75 rounded-top-4">
+                    Ticket Management
+                </h1>
+            </div>
+            <hr className="border-white"/>
 
             {/* Nav bar for selecting ticket type */}
-            <Nav fill variant="tabs" className="justify-content-center mt-3 webercolor " defaultActiveKey="pending">
+            <Nav fill variant="underline" className="justify-content-center mt-3 webercolor " defaultActiveKey="pending">
                 <Nav.Item>
                     <Nav.Link className="text-info" eventKey="pending" onClick={() => setActiveTab('pending')}>
                         Pending Tickets

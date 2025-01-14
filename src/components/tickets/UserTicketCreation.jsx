@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { db, auth } from '../../config/firebase';
 import { Timestamp, setDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Alert, ButtonToolbar, Card, Nav } from 'react-bootstrap';
+import { Alert, Button, Card, Nav } from 'react-bootstrap';
+
+
 
 const UserTicketCreation = () => {
     const [department, setDepartment] = useState('');
@@ -131,7 +132,7 @@ const UserTicketCreation = () => {
             <Button className="p-2 m-5 btn btn-primary" onClick={handleShow}>
                 <i className="bi bi-plus"></i> Create a ticket
             </Button>
-            <ButtonToolbar></ButtonToolbar>
+
 
             <Modal
                 show={show}
@@ -199,19 +200,19 @@ const UserTicketCreation = () => {
             </Modal>
 
             {/* Nav bar for selecting ticket type */}
-            <Nav fill variant="tabs" className="justify-content-center mt-3" defaultActiveKey="pending">
+            <Nav fill variant="underline" className="justify-content-center mt-3 webercolor" defaultActiveKey="pending">
                 <Nav.Item>
-                    <Nav.Link eventKey="pending" onClick={() => setActiveTab('pending')}>
+                    <Nav.Link eventKey="pending" className="text-info" onClick={() => setActiveTab('pending')}>
                         Pending Tickets
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="active" onClick={() => setActiveTab('active')}>
+                    <Nav.Link eventKey="active" className="text-info" onClick={() => setActiveTab('active')}>
                         Active Tickets
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="closed" onClick={() => setActiveTab('closed')}>
+                    <Nav.Link eventKey="closed" className="text-info" onClick={() => setActiveTab('closed')}>
                         Closed Tickets
                     </Nav.Link>
                 </Nav.Item>
