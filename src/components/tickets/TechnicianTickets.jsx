@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '../../config/firebase'; // Firebase config file
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { Button, Card, Nav, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import reactRefresh from "eslint-plugin-react-refresh";
 
 
 const TechnicianTickets = () => {
@@ -44,7 +43,7 @@ const TechnicianTickets = () => {
                 isActive: true,
             });
             setTickets((prevTickets) => ({
-                ...prevTickets,
+                prevTickets,
                 pending: prevTickets.pending.filter(ticket => ticket.id !== ticketId),
                 active: [...prevTickets.active, prevTickets.pending.find(ticket => ticket.id === ticketId)],
             }));
